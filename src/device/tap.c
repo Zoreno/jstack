@@ -96,17 +96,19 @@ int tap_init(char *dev)
 
     if (tap_fd < 0)
     {
-        fprintf(stderr, "Error allocating TAP device");
+        fprintf(stderr, "Error allocating TAP device\n");
         return -1;
     }
 
+    // Set the status of the interface to UP.
     if (set_if_up(dev) != 0)
     {
         fprintf(stderr, "Error setting up interface\n");
         return -2;
     }
 
-    if (set_if_route(dev, "192.168.52.0/24") != 0)
+    // Route all traffic heading to 10.0.0.* on this interface.
+    if (set_if_route(dev, "10.0.0.0/24") != 0)
     {
         fprintf(stderr, "Error when setting route for interface\n");
         return -3;
