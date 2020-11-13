@@ -8,6 +8,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -g -Wall -Wextra -Wpedantic")
 add_executable(jstack "")
 
 target_sources(jstack PRIVATE src/device/tap.c)
+target_sources(jstack PRIVATE src/device/netdev.c)
 
 target_sources(jstack PRIVATE src/ethernet/ethernet.c)
 

@@ -16,10 +16,16 @@
 //==============================================================================
 
 /**
- * @brief Parses a IP address from presentation to binary
+ * @brief Parses a IP address from presentation to binary representation.
  * 
- * @param af AF_INET or AF_INET6
- * @param src Ip address string
+ * For example IPv4:
+ * '127.0.0.1' is converted to '0x7F 0x00 0x00 0x01'.
+ * 
+ * IPv6:
+ * fe00::1 is converted to 0xFE00 0x0000 0x0000 0x0000 0x0000 0x0001.
+ * 
+ * @param af AF_INET for IPv4 or AF_INET6 for IPv6 address.
+ * @param src Ip address string.
  * @param dst Pointer to where to store the result.
  * @return 1 if valid, otherwise 0.
  */
