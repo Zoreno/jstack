@@ -11,6 +11,7 @@ typedef struct _eth_header
     unsigned char payload[];
 } __attribute__((packed)) eth_header;
 
+eth_header *parse_eth_header(char *buf);
 eth_header *init_eth_header(eth_header *header, uint16_t ethertype,
                             unsigned char *src_addr, unsigned char *dst_addr);
 
