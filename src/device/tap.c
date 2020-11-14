@@ -48,6 +48,12 @@ static int set_if_addr(char *dev, char *cidr)
     return command("ip address add dev %s local %s", dev, cidr);
 }
 
+// Set an address for the interface
+static int set_ip_addr6(char *dev, char *cidr)
+{
+    return command("ip -6 address add dev %s local %s", dev, cidr);
+}
+
 // Set interface link status to up.
 static int set_if_up(char *dev)
 {
