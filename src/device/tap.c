@@ -127,7 +127,7 @@ int tap_init(char *dev)
         return -3;
     }
 
-    if (set_if_addr(dev, "10.0.0.5/24") != 0)
+    if (set_if_addr(dev, "10.0.0.4/24") != 0)
     {
         log_error("Error when setting address for interface");
         return -4;
