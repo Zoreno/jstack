@@ -34,12 +34,17 @@ void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr)
            &dev->hw_addr[5]);
 }
 
-void netdev_transmit(netdev_t *dev, eth_header *hdr, uint16_t ethertype,
-                     int len, unsigned char *dst)
+int netdev_transmit(netdev_t *dev, eth_header *hdr, uint16_t ethertype,
+                    int len, unsigned char *dst)
 {
     init_eth_header(hdr, ethertype, dev->hw_addr, dst);
 
     len += sizeof(eth_header);
 
-    tap_write((char *)hdr, len);
+    return dev->send_func((char *)hdr, len);
+}
+
+int netdev_receive(netdev_t *dev, char *dst, int len)
+{
+    return dev->read_func(dst, len);
 }

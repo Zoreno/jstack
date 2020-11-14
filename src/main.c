@@ -21,7 +21,7 @@ void handle_frame(netdev_t *netdev, eth_header *header)
         arp_incoming(netdev, header);
         break;
     case ETH_P_IP:
-        log_info("Got IPv4 Packet!");
+        log_trace("Got IPv4 Packet!");
         break;
     case ETH_P_IPV6:
         log_trace("Got IPv6 Packet!");
@@ -38,8 +38,6 @@ int main()
     char buffer[BUFFER_SIZE];
     char *dev = calloc(10, 1);
 
-    netdev_t netdev;
-
     memset(buffer, 0, sizeof(buffer));
 
     if (tap_init(dev) < 0)
@@ -50,19 +48,22 @@ int main()
 
     log_info("TAP device initialized");
 
-    netdev_init(&netdev, "10.0.0.4", "00:0c:29:6d:50:25");
+    netdev_t tap_device;
+    netdev_init(&tap_device, "10.0.0.4", "00:0c:29:6d:50:25");
+    tap_device.read_func = tap_read;
+    tap_device.send_func = tap_write;
 
     arp_init();
 
     while (1)
     {
-        if (tap_read(buffer, BUFFER_SIZE) < 0)
+        if (netdev_receive(&tap_device, buffer, BUFFER_SIZE) < 0)
         {
             log_warn("ERR: Read from tun_fd: %s", strerror(errno));
         }
 
         eth_header *header = parse_eth_header(buffer);
 
-        handle_frame(&netdev, header);
+        handle_frame(&tap_device, header);
     }
 }
