@@ -6,6 +6,7 @@
 #include "arp/arp.h"
 #include "device/tap.h"
 #include "device/netdev.h"
+#include "ip/ipv4.h"
 
 #include "logging.h"
 #include "utils.h"
@@ -21,7 +22,7 @@ void handle_frame(netdev_t *netdev, eth_header *header)
         arp_incoming(netdev, header);
         break;
     case ETH_P_IP:
-        log_trace("Got IPv4 Packet!");
+        ipv4_incoming(netdev, header);
         break;
     case ETH_P_IPV6:
         log_trace("Got IPv6 Packet!");
