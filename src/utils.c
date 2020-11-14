@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "logging.h"
+
 int command(char *command_format, ...)
 {
     va_list arg_list;
@@ -22,7 +24,7 @@ int command(char *command_format, ...)
     vsnprintf(command_buffer, COMMAND_BUFFER_LENGTH, command_format, arg_list);
     va_end(arg_list);
 
-    printf("%s\n", command_buffer);
+    log_info("Running system command: %s", command_buffer);
 
     return system(command_buffer);
 }

@@ -5,6 +5,7 @@
 #include "arp/arp_cache.h"
 
 #include "endianess.h"
+#include "logging.h"
 
 void arp_incoming(netdev_t *netdev, eth_header *header)
 {
@@ -16,13 +17,14 @@ void arp_incoming(netdev_t *netdev, eth_header *header)
 
     if (arp_header->hw_type != ARP_ETHERNET)
     {
-        fprintf(stderr, "ARP: Unsupported HW type\n");
+        log_warn("ARP: Unsupported HW type");
         return;
     }
 
     if (arp_header->protype != ARP_IPV4)
     {
-        fprintf(stderr, "ARP: Unsupported protocol\n");
+        log_warn("ARP: Unsupported protocol");
+        return;
     }
 
     arp_ipv4_t *arp_data = (arp_ipv4_t *)arp_header->data;
@@ -31,13 +33,13 @@ void arp_incoming(netdev_t *netdev, eth_header *header)
 
     if (netdev->addr != arp_data->dst_ip)
     {
-        printf("ARP: Packet not for us.\n");
+        log_info("ARP: Packet not for us");
     }
 
     if (!merge && arp_cache_insert_entry(arp_header, arp_data) != 0)
     {
         // TODO: Implent LRU cache replacement policy
-        fprintf(stderr, "ARP: No space in ARP cache!\n");
+        log_error("ARP: No space in ARP cache!");
     }
 
     switch (arp_header->opcode)
@@ -46,7 +48,7 @@ void arp_incoming(netdev_t *netdev, eth_header *header)
         arp_reply(netdev, header, arp_header);
         break;
     default:
-        fprintf(stderr, "ARP: Opcode not supported\n");
+        log_warn("ARP: Opcode not supported");
         break;
     }
 }

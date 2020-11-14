@@ -2,10 +2,14 @@
 
 #include <string.h>
 
+#include "logging.h"
+
 static arp_cache_entry_t arp_cache[ARP_CACHE_LEN];
 
 void arp_cache_init()
 {
+    log_info("Initializing ARP cache");
+
     memset(arp_cache, 0, sizeof(arp_cache));
 }
 
@@ -19,6 +23,8 @@ int arp_cache_insert_entry(arp_header_t *header, arp_ipv4_t *data)
 
         if (entry->state == ARP_FREE)
         {
+            log_trace("Inserting value into ARP cache");
+
             entry->state = ARP_RESOLVED;
             entry->hw_type = header->hw_type;
             entry->src_ip = data->src_ip;
@@ -47,6 +53,7 @@ int arp_cache_update_entry(arp_header_t *header, arp_ipv4_t *data)
         if (entry->hw_type == header->hw_type &&
             entry->src_ip == data->src_ip)
         {
+            log_trace("Updating value in ARP cache");
             memcpy(entry->src_mac, data->src_mac, sizeof(entry->src_mac));
             return -1;
         }

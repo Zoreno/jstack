@@ -21,6 +21,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 
+#include "logging.h"
 #include "utils.h"
 
 //==============================================================================
@@ -57,8 +58,8 @@ static int tap_alloc(char *dev)
 
     if (fd < 0)
     {
-        fprintf(stderr, "Cannot open TAP device\n");
-        exit(1);
+        log_error("Cannot open TAP device");
+        return fd;
     }
 
     memset(&ifr, 0, sizeof(ifr));
@@ -76,7 +77,7 @@ static int tap_alloc(char *dev)
 
     if (error < 0)
     {
-        fprintf(stderr, "Could not IOCTL TAP device: %s\n", strerror(errno));
+        log_error("Could not IOCTL TAP device: %s", strerror(errno));
         close(fd);
         return error;
     }
@@ -96,21 +97,21 @@ int tap_init(char *dev)
 
     if (tap_fd < 0)
     {
-        fprintf(stderr, "Error allocating TAP device\n");
+        log_error("Error allocating TAP device");
         return -1;
     }
 
     // Set the status of the interface to UP.
     if (set_if_up(dev) != 0)
     {
-        fprintf(stderr, "Error setting up interface\n");
+        log_error("Error setting up interface");
         return -2;
     }
 
     // Route all traffic heading to 10.0.0.* on this interface.
     if (set_if_route(dev, "10.0.0.0/24") != 0)
     {
-        fprintf(stderr, "Error when setting route for interface\n");
+        log_error("Error when setting route for interface");
         return -3;
     }
 

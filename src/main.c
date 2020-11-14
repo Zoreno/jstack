@@ -7,6 +7,7 @@
 #include "device/tap.h"
 #include "device/netdev.h"
 
+#include "logging.h"
 #include "utils.h"
 
 #define BUFFER_SIZE 128
@@ -16,18 +17,18 @@ void handle_frame(netdev_t *netdev, eth_header *header)
     switch (header->ethertype)
     {
     case ETH_P_ARP:
-        printf("Got incoming ARP!\n");
+        log_info("Got incoming ARP!");
         arp_incoming(netdev, header);
         break;
     case ETH_P_IP:
-        printf("Got IPv4 Packet!\n");
+        log_info("Got IPv4 Packet!");
         break;
     case ETH_P_IPV6:
-        // printf("Got IPv6 Packet!\n");
+        log_trace("Got IPv6 Packet!");
         break;
     default:
-        fprintf(stderr, "ETH: Unrecognized ethernet type: %#04x\n",
-                header->ethertype);
+        log_warn("ETH: Unrecognized ethernet type: %#04x",
+                 header->ethertype);
         break;
     }
 }
@@ -43,9 +44,11 @@ int main()
 
     if (tap_init(dev) < 0)
     {
-        fprintf(stderr, "Failed to create TAP device\n");
+        log_fatal("Failed to create TAP device");
         exit(1);
     }
+
+    log_info("TAP device initialized");
 
     netdev_init(&netdev, "10.0.0.4", "00:0c:29:6d:50:25");
 
@@ -55,7 +58,7 @@ int main()
     {
         if (tap_read(buffer, BUFFER_SIZE) < 0)
         {
-            fprintf(stderr, "ERR: Read from tun_fd: %s\n", strerror(errno));
+            log_warn("ERR: Read from tun_fd: %s", strerror(errno));
         }
 
         eth_header *header = parse_eth_header(buffer);

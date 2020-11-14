@@ -20,6 +20,7 @@ target_sources(jstack PRIVATE src/ethernet/ethernet.c)
 target_sources(jstack PRIVATE src/inet/parse_address.c)
 
 target_sources(jstack PRIVATE src/endianess.c)
+target_sources(jstack PRIVATE src/logging.c)
 target_sources(jstack PRIVATE src/main.c)
 target_sources(jstack PRIVATE src/utils.c)
 
