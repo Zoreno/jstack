@@ -42,6 +42,12 @@ static int set_if_route(char *dev, char *cidr)
     return command("ip route add dev %s %s", dev, cidr);
 }
 
+// Set an address for the interface
+static int set_if_addr(char *dev, char *cidr)
+{
+    return command("ip address add dev %s local %s", dev, cidr);
+}
+
 // Set interface link status to up.
 static int set_if_up(char *dev)
 {
@@ -113,6 +119,12 @@ int tap_init(char *dev)
     {
         log_error("Error when setting route for interface");
         return -3;
+    }
+
+    if (set_if_addr(dev, "10.0.0.5/24") != 0)
+    {
+        log_error("Error when setting address for interface");
+        return -4;
     }
 
     return 0;
