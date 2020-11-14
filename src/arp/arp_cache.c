@@ -23,7 +23,8 @@ int arp_cache_insert_entry(arp_header_t *header, arp_ipv4_t *data)
 
         if (entry->state == ARP_FREE)
         {
-            log_trace("Inserting value into ARP cache");
+            log_debug("Inserting value into ARP cache. hw_type: %#04x",
+                      header->hw_type);
 
             entry->state = ARP_RESOLVED;
             entry->hw_type = header->hw_type;
@@ -53,7 +54,7 @@ int arp_cache_update_entry(arp_header_t *header, arp_ipv4_t *data)
         if (entry->hw_type == header->hw_type &&
             entry->src_ip == data->src_ip)
         {
-            log_trace("Updating value in ARP cache");
+            log_debug("Updating value in ARP cache");
             memcpy(entry->src_mac, data->src_mac, sizeof(entry->src_mac));
             return -1;
         }

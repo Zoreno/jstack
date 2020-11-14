@@ -32,7 +32,7 @@ static const char *level_colors[] = {
     "\x1b[35m"};
 #endif
 
-static log_level_t level_threshold = LOG_INFO;
+static log_level_t level_threshold = LOG_DEBUG;
 
 //==============================================================================
 // Local functions
