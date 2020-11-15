@@ -11,10 +11,14 @@ void ipv4_outgoing(netdev_t *netdev, eth_header_t *header)
 
     // TODO: This should be looked up in the ARP cache
     uint32_t tmp_addr = ip_header->src_addr;
-    ip_header->dst_addr = tmp_addr;
     ip_header->src_addr = netdev->addr;
+    ip_header->dst_addr = tmp_addr;
+
+    ipv4_print_header(ip_header);
 
     ip_header->length = htons(ip_header->length);
+    ip_header->id = htons(ip_header->id);
+    ip_header->bitfield2 = htons(ip_header->bitfield2);
 
     // The checksum should be zeroed before calculation.
     ip_header->checksum = 0;

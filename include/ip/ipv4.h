@@ -85,6 +85,8 @@ void ipv4_outgoing(netdev_t *netdev, eth_header_t *header);
  */
 uint16_t ipv4_calculate_checksum(ipv4_header_t *header);
 
+void ipv4_print_header(ipv4_header_t *ip_header);
+
 #endif
 
 //==============================================================================

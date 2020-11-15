@@ -20,6 +20,7 @@ target_sources(jstack PRIVATE src/ethernet/ethernet.c)
 target_sources(jstack PRIVATE src/inet/parse_address.c)
 
 target_sources(jstack PRIVATE src/ip/ipv4_checksum.c)
+target_sources(jstack PRIVATE src/ip/ipv4_debug.c)
 target_sources(jstack PRIVATE src/ip/ipv4_input.c)
 target_sources(jstack PRIVATE src/ip/ipv4_output.c)
 
