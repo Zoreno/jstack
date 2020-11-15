@@ -21,6 +21,11 @@ void arp_init()
     arp_cache_init();
 }
 
+unsigned char *arp_lookup(uint32_t ip_addr)
+{
+    return arp_cache_lookup(ip_addr);
+}
+
 //==============================================================================
 // End of file
 //==============================================================================

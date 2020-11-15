@@ -36,5 +36,6 @@ typedef struct _arp_ipv4
 void arp_init();
 void arp_incoming(netdev_t *netdev, eth_header_t *header);
 void arp_reply(netdev_t *netdev, eth_header_t *header, arp_header_t *arp_header);
+unsigned char *arp_lookup(uint32_t ip_addr);
 
 #endif

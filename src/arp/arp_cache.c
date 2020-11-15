@@ -87,3 +87,21 @@ int arp_cache_get_size()
 
     return len;
 }
+
+unsigned char *arp_cache_lookup(uint32_t ip_addr)
+{
+    arp_cache_entry_t *entry;
+
+    for (int i = 0; i < ARP_CACHE_LEN; ++i)
+    {
+        entry = &arp_cache[i];
+
+        if (entry->state == ARP_RESOLVED &&
+            entry->src_ip == ip_addr)
+        {
+            return entry->src_mac;
+        }
+    }
+
+    return NULL;
+}

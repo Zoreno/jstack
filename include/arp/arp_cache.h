@@ -21,5 +21,6 @@ int arp_cache_insert_entry(arp_header_t *header, arp_ipv4_t *data);
 int arp_cache_update_entry(arp_header_t *header, arp_ipv4_t *data);
 int arp_cache_get_capacity();
 int arp_cache_get_size();
+unsigned char *arp_cache_lookup(uint32_t ip_addr);
 
 #endif
