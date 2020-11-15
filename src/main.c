@@ -63,7 +63,7 @@ int main()
             log_warn("ERR: Read from tun_fd: %s", strerror(errno));
         }
 
-        eth_header_t *header = parse_eth_header_t(buffer);
+        eth_header_t *header = parse_eth_header(buffer);
 
         handle_frame(&tap_device, header);
     }

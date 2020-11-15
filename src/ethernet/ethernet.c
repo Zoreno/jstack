@@ -17,7 +17,7 @@ static void mac_to_string(char *str, unsigned char *mac)
             mac[5]);
 }
 
-eth_header_t *parse_eth_header_t(char *buf)
+eth_header_t *parse_eth_header(char *buf)
 {
     eth_header_t *header = (eth_header_t *)buf;
 
@@ -34,8 +34,8 @@ eth_header_t *parse_eth_header_t(char *buf)
     return header;
 }
 
-eth_header_t *init_eth_header_t(eth_header_t *header, uint16_t ethertype,
-                                unsigned char *src_addr, unsigned char *dst_addr)
+eth_header_t *init_eth_header(eth_header_t *header, uint16_t ethertype,
+                              unsigned char *src_addr, unsigned char *dst_addr)
 {
     header->ethertype = htons(ethertype);
 
