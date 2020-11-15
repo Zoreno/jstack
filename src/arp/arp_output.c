@@ -4,7 +4,7 @@
 
 #include "endianess.h"
 
-void arp_reply(netdev_t *netdev, eth_header *header, arp_header_t *arp_header)
+void arp_reply(netdev_t *netdev, eth_header_t *header, arp_header_t *arp_header)
 {
     arp_ipv4_t *arp_data;
     int len;

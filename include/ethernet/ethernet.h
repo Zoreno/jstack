@@ -3,16 +3,16 @@
 
 #include <stdint.h>
 
-typedef struct _eth_header
+typedef struct _eth_header_t
 {
     unsigned char mac_dest[6];
     unsigned char mac_src[6];
     uint16_t ethertype;
     unsigned char payload[];
-} __attribute__((packed)) eth_header;
+} __attribute__((packed)) eth_header_t;
 
-eth_header *parse_eth_header(char *buf);
-eth_header *init_eth_header(eth_header *header, uint16_t ethertype,
-                            unsigned char *src_addr, unsigned char *dst_addr);
+eth_header_t *parse_eth_header_t(char *buf);
+eth_header_t *init_eth_header_t(eth_header_t *header, uint16_t ethertype,
+                                unsigned char *src_addr, unsigned char *dst_addr);
 
 #endif

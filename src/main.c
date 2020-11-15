@@ -13,7 +13,7 @@
 
 #define BUFFER_SIZE 128
 
-void handle_frame(netdev_t *netdev, eth_header *header)
+void handle_frame(netdev_t *netdev, eth_header_t *header)
 {
     switch (header->ethertype)
     {
@@ -63,7 +63,7 @@ int main()
             log_warn("ERR: Read from tun_fd: %s", strerror(errno));
         }
 
-        eth_header *header = parse_eth_header(buffer);
+        eth_header_t *header = parse_eth_header_t(buffer);
 
         handle_frame(&tap_device, header);
     }

@@ -4,16 +4,16 @@
 
 #include "endianess.h"
 
-eth_header *parse_eth_header(char *buf)
+eth_header_t *parse_eth_header_t(char *buf)
 {
-    eth_header *header = (eth_header *)buf;
+    eth_header_t *header = (eth_header_t *)buf;
 
     header->ethertype = htons(header->ethertype);
 
     return header;
 }
 
-eth_header *init_eth_header(eth_header *header, uint16_t ethertype,
+eth_header_t *init_eth_header_t(eth_header_t *header, uint16_t ethertype,
                             unsigned char *src_addr, unsigned char *dst_addr)
 {
     header->ethertype = htons(ethertype);

@@ -7,7 +7,7 @@
 #include "endianess.h"
 #include "logging.h"
 
-void arp_incoming(netdev_t *netdev, eth_header *header)
+void arp_incoming(netdev_t *netdev, eth_header_t *header)
 {
     arp_header_t *arp_header = (arp_header_t *)header->payload;
 

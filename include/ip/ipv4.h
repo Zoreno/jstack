@@ -67,8 +67,8 @@ typedef struct _ipv4_header
 // Interface functions
 //==============================================================================
 
-void ipv4_incoming(netdev_t *netdev, eth_header *header);
-void ipv4_outgoing(netdev_t *netdev, eth_header *header);
+void ipv4_incoming(netdev_t *netdev, eth_header_t *header);
+void ipv4_outgoing(netdev_t *netdev, eth_header_t *header);
 
 /**
  * @brief Calculates the IPv4 checksum over the packet.

@@ -18,7 +18,7 @@ typedef struct _netdev
 } netdev_t;
 
 void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr);
-int netdev_transmit(netdev_t *dev, eth_header *hdr, uint16_t ethertype, int len, unsigned char *dst);
+int netdev_transmit(netdev_t *dev, eth_header_t *hdr, uint16_t ethertype, int len, unsigned char *dst);
 int netdev_receive(netdev_t *dev, char *buffer, int len);
 
 #endif

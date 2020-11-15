@@ -49,7 +49,7 @@ static void ipv4_print_header(ipv4_header_t *ip_header)
 // Interface functions
 //==============================================================================
 
-void ipv4_incoming(netdev_t *netdev, eth_header *header)
+void ipv4_incoming(netdev_t *netdev, eth_header_t *header)
 {
     ipv4_header_t *ip_header = (ipv4_header_t *)header->payload;
     uint16_t checksum = -1;

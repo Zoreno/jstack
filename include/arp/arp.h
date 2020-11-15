@@ -34,7 +34,7 @@ typedef struct _arp_ipv4
 } __attribute__((packed)) arp_ipv4_t;
 
 void arp_init();
-void arp_incoming(netdev_t *netdev, eth_header *header);
-void arp_reply(netdev_t *netdev, eth_header *header, arp_header_t *arp_header);
+void arp_incoming(netdev_t *netdev, eth_header_t *header);
+void arp_reply(netdev_t *netdev, eth_header_t *header, arp_header_t *arp_header);
 
 #endif

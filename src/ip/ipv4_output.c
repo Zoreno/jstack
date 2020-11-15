@@ -4,7 +4,7 @@
 
 #define ETH_P_IP 0x0800
 
-void ipv4_outgoing(netdev_t *netdev, eth_header *header)
+void ipv4_outgoing(netdev_t *netdev, eth_header_t *header)
 {
     ipv4_header_t *ip_header = (ipv4_header_t *)header->payload;
     uint16_t length = ip_header->length;
