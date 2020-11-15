@@ -10,6 +10,8 @@
 
 #include "ip/ipv4.h"
 
+#include "icmp/icmpv4.h"
+
 #include "endianess.h"
 #include "logging.h"
 
@@ -69,6 +71,7 @@ void ipv4_incoming(netdev_t *netdev, eth_header_t *header)
     {
     case ICMPV4:
         log_info("Incoming ICMPV4 Packet!");
+        icmpv4_incoming(netdev, header);
         break;
     default:
         log_warn("Unknown IP header protocol: %#02x", ip_header->protocol);
