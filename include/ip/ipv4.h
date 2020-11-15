@@ -23,25 +23,42 @@
 #define IPV4 0x04
 #define ICMPV4 0x01
 
+#define IPV4_MF 0x1
+#define IPV4_DF 0x2
+
 typedef struct _ipv4_header
 {
     uint8_t header_length : 4;
     uint8_t version : 4;
     uint8_t type_of_service;
-
     uint16_t length;
-    uint16_t id;
 
-    uint16_t flags : 3;
-    uint16_t fragment_offset : 13;
+    uint16_t id;
+    union
+    {
+        struct
+        {
+            uint16_t fragment_offset : 13;
+            uint16_t flags : 3;
+        };
+        uint16_t bitfield2;
+    };
 
     uint8_t time_to_live;
     uint8_t protocol;
-
     uint16_t checksum;
 
-    uint32_t src_addr;
-    uint32_t dst_addr;
+    union
+    {
+        uint32_t src_addr;
+        uint8_t src_addr_bytes[4];
+    };
+
+    union
+    {
+        uint32_t dst_addr;
+        uint8_t dst_addr_bytes[4];
+    };
 
     uint8_t payload[];
 } __attribute__((packed)) ipv4_header_t;
