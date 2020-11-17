@@ -8,6 +8,14 @@
 typedef int (*netdev_send_t)(char *, int);
 typedef int (*netdev_read_t)(char *, int);
 
+typedef struct _netdev_stats
+{
+    uint64_t tx_bytes;
+    uint64_t rx_bytes;
+    uint64_t tx_packets;
+    uint64_t rx_packets;
+} netdev_stats_t;
+
 typedef struct _netdev
 {
     uint32_t addr;
@@ -15,10 +23,14 @@ typedef struct _netdev
 
     netdev_send_t send_func;
     netdev_read_t read_func;
+
+    netdev_stats_t stats;
 } netdev_t;
 
 void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr);
 int netdev_transmit(netdev_t *dev, eth_header_t *hdr, uint16_t ethertype, int len, unsigned char *dst);
 int netdev_receive(netdev_t *dev, char *buffer, int len);
+void netdev_stats_clear(netdev_t *netdev);
+void netdev_get_stats(netdev_t *netdev, netdev_stats_t *stats);
 
 #endif
