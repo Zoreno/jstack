@@ -34,6 +34,7 @@ void arp_incoming(netdev_t *netdev, eth_header_t *header)
     if (netdev->addr != arp_data->dst_ip)
     {
         log_info("ARP: Packet not for us");
+        return;
     }
 
     if (!merge && arp_cache_insert_entry(arp_header, arp_data) != 0)
