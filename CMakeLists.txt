@@ -36,7 +36,7 @@ target_sources(jstack PRIVATE src/utils.c)
 target_include_directories(jstack PRIVATE include)
 
 add_custom_target(run
-COMMAND sudo ./jstack
-DEPENDS jstack
-WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build
-COMMENT "Running the netstack")
+    COMMAND sudo ./jstack
+    DEPENDS jstack
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build
+    COMMENT "Running the netstack")
