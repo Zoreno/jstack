@@ -29,6 +29,7 @@ target_sources(jstack PRIVATE src/ip/ipv4_input.c)
 target_sources(jstack PRIVATE src/ip/ipv4_output.c)
 
 target_sources(jstack PRIVATE src/endianess.c)
+target_sources(jstack PRIVATE src/list.c)
 target_sources(jstack PRIVATE src/logging.c)
 target_sources(jstack PRIVATE src/main.c)
 target_sources(jstack PRIVATE src/utils.c)
