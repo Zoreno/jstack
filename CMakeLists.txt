@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(jstack C)
 
+set(PLATFORM "linux")
+
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -g -Wall -Wextra -Wpedantic")
 
@@ -27,6 +29,10 @@ target_sources(jstack PRIVATE src/ip/ipv4_checksum.c)
 target_sources(jstack PRIVATE src/ip/ipv4_debug.c)
 target_sources(jstack PRIVATE src/ip/ipv4_input.c)
 target_sources(jstack PRIVATE src/ip/ipv4_output.c)
+
+if (${PLATFORM} STREQUAL "linux")
+include(linux)
+endif()
 
 target_sources(jstack PRIVATE src/endianess.c)
 target_sources(jstack PRIVATE src/list.c)

@@ -11,6 +11,8 @@
 #include "logging.h"
 #include "utils.h"
 
+#include "platform/linux/mutex.h"
+
 #define BUFFER_SIZE 128
 
 void handle_frame(netdev_t *netdev, eth_header_t *header)
@@ -39,7 +41,15 @@ int main()
     char buffer[BUFFER_SIZE];
     char *dev = calloc(10, 1);
 
+    mutex_t mutex;
+
+    mutex_init(&mutex);
+
+    mutex_lock(&mutex);
+
     memset(buffer, 0, sizeof(buffer));
+
+    mutex_unlock(&mutex);
 
     if (tap_init(dev) < 0)
     {
