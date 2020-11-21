@@ -41,16 +41,6 @@ int main()
     char buffer[BUFFER_SIZE];
     char *dev = calloc(10, 1);
 
-    mutex_t mutex;
-
-    mutex_init(&mutex);
-
-    mutex_lock(&mutex);
-
-    memset(buffer, 0, sizeof(buffer));
-
-    mutex_unlock(&mutex);
-
     if (tap_init(dev) < 0)
     {
         log_fatal("Failed to create TAP device");
