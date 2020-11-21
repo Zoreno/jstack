@@ -11,7 +11,7 @@
 
 #define _AF_INET 2
 
-void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr)
+void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr, uint32_t mtu)
 {
     log_info("Initializing netdev");
 
@@ -34,6 +34,9 @@ void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr)
            &dev->hw_addr[5]);
 
     netdev_stats_clear(dev);
+
+    dev->addr_len = 6;
+    dev->mtu = 1500;
 }
 
 int netdev_transmit(netdev_t *dev, eth_header_t *hdr, uint16_t ethertype,
@@ -75,4 +78,9 @@ void netdev_get_stats(netdev_t *netdev, netdev_stats_t *stats)
     {
         stats = &netdev->stats;
     }
+}
+
+uint32_t netdev_get_mtu(netdev_t *netdev)
+{
+    return netdev->mtu;
 }

@@ -60,7 +60,7 @@ int main()
     log_info("TAP device initialized");
 
     netdev_t tap_device;
-    netdev_init(&tap_device, "10.0.0.4", "00:0c:29:6d:50:25");
+    netdev_init(&tap_device, "10.0.0.4", "00:0c:29:6d:50:25", 1500);
     tap_device.read_func = tap_read;
     tap_device.send_func = tap_write;
 
