@@ -25,12 +25,16 @@ typedef struct _netdev
     netdev_read_t read_func;
 
     netdev_stats_t stats;
+
+    uint8_t addr_len;
+    uint32_t mtu;
 } netdev_t;
 
-void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr);
+void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr, uint32_t mtu);
 int netdev_transmit(netdev_t *dev, eth_header_t *hdr, uint16_t ethertype, int len, unsigned char *dst);
 int netdev_receive(netdev_t *dev, char *buffer, int len);
 void netdev_stats_clear(netdev_t *netdev);
 void netdev_get_stats(netdev_t *netdev, netdev_stats_t *stats);
+uint32_t netdev_get_mtu(netdev_t *netdev);
 
 #endif
