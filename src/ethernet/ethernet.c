@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "arp/arp.h"
+#include "ip/ipv4.h"
+
 #include "endianess.h"
 #include "logging.h"
 
@@ -57,4 +60,25 @@ eth_header_t *init_eth_header(eth_header_t *header, uint16_t ethertype,
     log_debug("Outgoing dst mac addr: %s", dst_mac);
 
     return header;
+}
+
+void ethernet_handle_frame(netdev_t *netdev, eth_header_t *header)
+{
+    switch (header->ethertype)
+    {
+    case ETH_P_ARP:
+        log_info("Got incoming ARP!");
+        arp_incoming(netdev, header);
+        break;
+    case ETH_P_IP:
+        ipv4_incoming(netdev, header);
+        break;
+    case ETH_P_IPV6:
+        log_trace("Got IPv6 Packet!");
+        break;
+    default:
+        log_warn("ETH: Unrecognized ethernet type: %#04x",
+                 header->ethertype);
+        break;
+    }
 }
