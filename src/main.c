@@ -68,8 +68,7 @@ static void cancel_all_other_threads()
     }
 }
 
-static void *
-stop_stack_handler(void *arg)
+static void *stop_stack_handler(void *arg)
 {
     int err, signo;
     (void)arg;
