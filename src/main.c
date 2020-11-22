@@ -36,6 +36,7 @@
 #include "ethernet/ethernet.h"
 #include "ip/ipv4.h"
 #include "platform/linux/mutex.h"
+#include "platform/linux/sleep.h"
 #include "platform/linux/thread.h"
 
 #include "list.h"
@@ -52,10 +53,24 @@ int running = 1;
 
 list_t *threads;
 
+static void print_list(list_t *list)
+{
+    list_node_t *node;
+
+    for (node = list->head; node != NULL; node = node->next)
+    {
+        thread_t *thread = (thread_t *)node->payload;
+
+        log_debug("LIST_PRINT: %s", thread->name);
+    }
+}
+
 static void cancel_all_other_threads()
 {
     list_node_t *node;
     thread_t self = thread_self();
+
+    print_list(threads);
 
     for (node = threads->head; node != NULL; node = node->next)
     {
@@ -63,6 +78,7 @@ static void cancel_all_other_threads()
 
         if (!thread_equal(&self, thread))
         {
+            log_debug("Cancelling thread '%s'", thread->name);
             thread_cancel(thread);
         }
     }
@@ -95,6 +111,17 @@ static void *stop_stack_handler(void *arg)
     }
 
     return NULL;
+}
+
+static void *timer_thread(void *arg)
+{
+    (void)arg;
+
+    while (1)
+    {
+        thread_sleep(1000000);
+        log_debug("Tick");
+    }
 }
 
 static void init_signals()
@@ -141,13 +168,16 @@ static void run_threads(netdev_t *tap_device)
 {
     create_thread("Netdev RX", netdev_rx_thread, tap_device);
     create_thread("Stack Handler", stop_stack_handler, NULL);
+    create_thread("Timer Handler", timer_thread, NULL);
+
+    print_list(threads);
 }
 
 static void join_threads()
 {
     list_node_t *node;
 
-    while ((node = list_pop(threads)) != NULL)
+    for (node = threads->head; node != NULL; node = node->next)
     {
         thread_t *thread = (thread_t *)node->payload;
 
@@ -162,16 +192,16 @@ static void join_threads()
         {
             log_info("Joined with thread '%s'", thread->name);
         }
-
-        free(thread);
-        free(node);
-
-        node = NULL;
     }
+
+    list_destroy(threads);
+    list_free(threads);
 }
 
 int main()
 {
+    log_init(LOG_INFO);
+
     threads = list_create();
 
     netdev_t tap_device;
