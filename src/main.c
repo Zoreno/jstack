@@ -129,16 +129,18 @@ static void init_stack(netdev_t *tap_device)
     arp_init();
 }
 
+static void create_thread(const char *name, start_func func, void *arg)
+{
+    thread_t *tid = malloc(sizeof(thread_t));
+
+    thread_create(name, tid, func, arg);
+    list_insert(threads, tid);
+}
+
 static void run_threads(netdev_t *tap_device)
 {
-    thread_t *netdev_rx_tid = malloc(sizeof(thread_t));
-    thread_t *stack_handler_tid = malloc(sizeof(thread_t));
-
-    thread_create("Netdev RX", netdev_rx_tid, netdev_rx_thread, tap_device);
-    list_insert(threads, netdev_rx_tid);
-
-    thread_create("Stack Handler", stack_handler_tid, stop_stack_handler, NULL);
-    list_insert(threads, stack_handler_tid);
+    create_thread("Netdev RX", netdev_rx_thread, tap_device);
+    create_thread("Stack Handler", stop_stack_handler, NULL);
 }
 
 static void join_threads()
