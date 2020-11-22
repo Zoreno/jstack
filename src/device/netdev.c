@@ -68,23 +68,18 @@ void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr, uint32_t 
     }
 
     // Parse the MAC address
-    sscanf(hw_addr, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &dev->hw_addr[0],
-           &dev->hw_addr[1],
-           &dev->hw_addr[2],
-           &dev->hw_addr[3],
-           &dev->hw_addr[4],
-           &dev->hw_addr[5]);
+    mac_address_from_string(&dev->hw_addr, hw_addr);
 
     netdev_stats_clear(dev);
 
-    dev->addr_len = 6;
-    dev->mtu = 1500;
+    dev->addr_len = MAC_ADDRESS_OCTET_COUNT;
+    dev->mtu = mtu;
 }
 
 int netdev_transmit(netdev_t *dev, eth_header_t *hdr, uint16_t ethertype,
-                    int len, unsigned char *dst)
+                    int len, mac_address_t *dst)
 {
-    init_eth_header(hdr, ethertype, dev->hw_addr, dst);
+    init_eth_header(hdr, ethertype, &dev->hw_addr, dst);
 
     len += sizeof(eth_header_t);
 

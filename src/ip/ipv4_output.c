@@ -24,5 +24,5 @@ void ipv4_outgoing(netdev_t *netdev, eth_header_t *header)
     ip_header->checksum = 0;
     ip_header->checksum = ipv4_calculate_checksum(ip_header);
 
-    netdev_transmit(netdev, header, ETH_P_IP, length, header->mac_src);
+    netdev_transmit(netdev, header, ETH_P_IP, length, &header->mac_src);
 }

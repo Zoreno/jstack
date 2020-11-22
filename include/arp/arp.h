@@ -6,6 +6,8 @@
 #include "device/netdev.h"
 #include "ethernet/ethernet.h"
 
+#include "mac_address.h"
+
 #define ARP_ETHERNET 0x0001
 #define ARP_IPV4 0x0800
 #define ARP_REQUEST 0x0001
@@ -27,15 +29,15 @@ typedef struct _arp_header
 
 typedef struct _arp_ipv4
 {
-    unsigned char src_mac[6];
+    mac_address_t src_mac;
     uint32_t src_ip;
-    unsigned char dst_mac[6];
+    mac_address_t dst_mac;
     uint32_t dst_ip;
 } __attribute__((packed)) arp_ipv4_t;
 
 void arp_init();
 void arp_incoming(netdev_t *netdev, eth_header_t *header);
 void arp_reply(netdev_t *netdev, eth_header_t *header, arp_header_t *arp_header);
-unsigned char *arp_lookup(uint32_t ip_addr);
+mac_address_t *arp_lookup(uint32_t ip_addr);
 
 #endif

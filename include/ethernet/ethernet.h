@@ -3,19 +3,21 @@
 
 #include <stdint.h>
 
+#include "mac_address.h"
+
 typedef struct _netdev netdev_t;
 
 typedef struct _eth_header_t
 {
-    unsigned char mac_dest[6];
-    unsigned char mac_src[6];
+    mac_address_t mac_dest;
+    mac_address_t mac_src;
     uint16_t ethertype;
     unsigned char payload[];
 } __attribute__((packed)) eth_header_t;
 
 eth_header_t *parse_eth_header(char *buf);
 eth_header_t *init_eth_header(eth_header_t *header, uint16_t ethertype,
-                              unsigned char *src_addr, unsigned char *dst_addr);
+                              mac_address_t *src_addr, mac_address_t *dst_addr);
 void ethernet_handle_frame(netdev_t *netdev, eth_header_t *header);
 
 #endif

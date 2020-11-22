@@ -28,17 +28,6 @@ static void ip_to_string(char *str, uint32_t ip)
             (ip >> 24) & 0xFF);
 }
 
-static void mac_to_string(char *str, unsigned char *mac)
-{
-    sprintf(str, "%02x:%02x:%02x:%02x:%02x:%02x",
-            mac[0],
-            mac[1],
-            mac[2],
-            mac[3],
-            mac[4],
-            mac[5]);
-}
-
 static void print_arp_cache()
 {
     arp_cache_entry_t *entry;
@@ -53,12 +42,12 @@ static void print_arp_cache()
             char mac[32];
 
             ip_to_string(ip, entry->src_ip);
-            mac_to_string(mac, entry->src_mac);
+            mac_address_to_string(mac, &entry->src_mac);
 
             log_debug("Entry %2i: hw_type=%s(0x%04x) ip=%s, mac=%s",
                       i,
-                      entry->hw_type,
                       hw_type_to_string(entry->hw_type),
+                      entry->hw_type,
                       ip,
                       mac);
         }
@@ -88,7 +77,7 @@ int arp_cache_insert_entry(arp_header_t *header, arp_ipv4_t *data)
             entry->state = ARP_RESOLVED;
             entry->hw_type = header->hw_type;
             entry->src_ip = data->src_ip;
-            memcpy(entry->src_mac, data->src_mac, sizeof(entry->src_mac));
+            mac_address_copy(&entry->src_mac, &data->src_mac);
 
             print_arp_cache();
 
@@ -116,7 +105,7 @@ int arp_cache_update_entry(arp_header_t *header, arp_ipv4_t *data)
             entry->src_ip == data->src_ip)
         {
             log_debug("Updating value in ARP cache");
-            memcpy(entry->src_mac, data->src_mac, sizeof(entry->src_mac));
+            mac_address_copy(&entry->src_mac, &data->src_mac);
             return -1;
         }
     }
@@ -149,7 +138,7 @@ int arp_cache_get_size()
     return len;
 }
 
-unsigned char *arp_cache_lookup(uint32_t ip_addr)
+mac_address_t *arp_cache_lookup(uint32_t ip_addr)
 {
     print_arp_cache();
 
@@ -162,7 +151,7 @@ unsigned char *arp_cache_lookup(uint32_t ip_addr)
         if (entry->state == ARP_RESOLVED &&
             entry->src_ip == ip_addr)
         {
-            return entry->src_mac;
+            return &entry->src_mac;
         }
     }
 
