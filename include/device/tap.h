@@ -18,10 +18,9 @@
 /**
  * @brief Initializes the device 
  * 
- * @param dev Interface name.
  * @return < 0 on error.
  */
-int tap_init(char *dev);
+int tap_init();
 
 /**
  * @brief Read from the interface, returning any bytes that may be present.
