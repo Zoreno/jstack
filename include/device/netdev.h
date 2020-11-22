@@ -30,6 +30,7 @@ typedef struct _netdev
     uint32_t mtu;
 } netdev_t;
 
+void *netdev_rx_thread(void *arg);
 void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr, uint32_t mtu);
 int netdev_transmit(netdev_t *dev, eth_header_t *hdr, uint16_t ethertype, int len, unsigned char *dst);
 int netdev_receive(netdev_t *dev, char *buffer, int len);

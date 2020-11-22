@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "device/tap.h"
 #include "inet/parse_address.h"
@@ -10,6 +11,43 @@
 #include "logging.h"
 
 #define _AF_INET 2
+
+static void *allocate_device_buffer(size_t size)
+{
+    void *mem = malloc(size);
+
+    if (!mem)
+    {
+        log_fatal("Failed to allocate memory for device buffer");
+        exit(1);
+    }
+
+    log_info("Allocated %lu bytes for device", size);
+
+    return mem;
+}
+
+void *netdev_rx_thread(void *arg)
+{
+    netdev_t *tap_device = (netdev_t *)arg;
+
+    // TODO: This should be freed somehow.
+    char *buffer = allocate_device_buffer(tap_device->mtu);
+
+    while (1)
+    {
+        if (netdev_receive(tap_device, buffer, tap_device->mtu) < 0)
+        {
+            log_warn("ERR: Read from tun_fd: %s", strerror(errno));
+        }
+
+        eth_header_t *header = parse_eth_header(buffer);
+
+        ethernet_handle_frame(tap_device, header);
+    }
+
+    return NULL;
+}
 
 void netdev_init(netdev_t *dev, const char *addr, const char *hw_addr, uint32_t mtu)
 {
