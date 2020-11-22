@@ -49,7 +49,7 @@
 sigset_t mask;
 int running = 1;
 
-thread_t netdev_tx_tid;
+thread_t netdev_rx_tid;
 thread_t stack_handler_tid;
 
 static void *stop_stack_handler(void *arg)
@@ -70,49 +70,12 @@ static void *stop_stack_handler(void *arg)
         case SIGINT:
         case SIGQUIT:
             running = 0;
-            thread_cancel(&netdev_tx_tid);
+            thread_cancel(&netdev_rx_tid);
             log_info("Caught interrupt signal. Stopping stack...");
             return 0;
         default:
             log_warn("Unexpected signal %d\n", signo);
         }
-    }
-
-    return NULL;
-}
-
-static void *allocate_device_buffer(size_t size)
-{
-    void *mem = malloc(size);
-
-    if (!mem)
-    {
-        log_fatal("Failed to allocate memory for device buffer");
-        exit(1);
-    }
-
-    log_info("Allocated %lu bytes for device", size);
-
-    return mem;
-}
-
-static void *netdev_tx_thread(void *arg)
-{
-    netdev_t *tap_device = (netdev_t *)arg;
-
-    // TODO: This should be freed somehow.
-    char *buffer = allocate_device_buffer(tap_device->mtu);
-
-    while (1)
-    {
-        if (netdev_receive(tap_device, buffer, tap_device->mtu) < 0)
-        {
-            log_warn("ERR: Read from tun_fd: %s", strerror(errno));
-        }
-
-        eth_header_t *header = parse_eth_header(buffer);
-
-        ethernet_handle_frame(tap_device, header);
     }
 
     return NULL;
@@ -152,13 +115,13 @@ static void init_stack(netdev_t *tap_device)
 
 static void run_threads(netdev_t *tap_device)
 {
-    thread_create("Netdev TX", &netdev_tx_tid, netdev_tx_thread, tap_device);
+    thread_create("Netdev RX", &netdev_rx_tid, netdev_rx_thread, tap_device);
     thread_create("Stack Handler", &stack_handler_tid, stop_stack_handler, NULL);
 }
 
 static void join_threads()
 {
-    int err = thread_join(&netdev_tx_tid, NULL);
+    int err = thread_join(&netdev_rx_tid, NULL);
 
     if (err)
     {
