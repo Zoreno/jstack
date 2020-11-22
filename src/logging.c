@@ -10,6 +10,8 @@
 
 #include "logging.h"
 
+#include "platform/linux/mutex.h"
+
 //==============================================================================
 // Local variables
 //==============================================================================
@@ -32,7 +34,8 @@ static const char *level_colors[] = {
     "\x1b[35m"};
 #endif
 
-static log_level_t level_threshold = LOG_DEBUG;
+static log_level_t level_threshold;
+static mutex_t mutex;
 
 //==============================================================================
 // Local functions
@@ -69,8 +72,11 @@ static int get_current_time(char *buffer, size_t buffer_size)
 
 void log_printf(log_level_t level, const char *file, int line, const char *fmt, ...)
 {
+    mutex_lock(&mutex);
+
     if (level < level_threshold)
     {
+        mutex_unlock(&mutex);
         return;
     }
 
@@ -95,6 +101,8 @@ void log_printf(log_level_t level, const char *file, int line, const char *fmt, 
 
     printf("\n");
     fflush(stdout);
+
+    mutex_unlock(&mutex);
 }
 
 const char *log_level_string(log_level_t level)
@@ -110,6 +118,13 @@ void log_set_threshold(log_level_t level)
 log_level_t log_get_threshold()
 {
     return level_threshold;
+}
+
+void log_init(log_level_t log_level)
+{
+    mutex_init(&mutex);
+
+    level_threshold = log_level;
 }
 
 //==============================================================================

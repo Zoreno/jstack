@@ -82,6 +82,14 @@ void log_set_threshold(log_level_t level);
  */
 log_level_t log_get_threshold();
 
+/**
+ * @brief Initializes the logging unit.
+ * 
+ * @param log_level Log level to use.
+ * 
+ */
+void log_init(log_level_t log_level);
+
 #endif
 
 //==============================================================================
