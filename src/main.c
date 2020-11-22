@@ -122,6 +122,8 @@ static void *timer_thread(void *arg)
         thread_sleep(1000000);
         log_debug("Tick");
     }
+
+    return NULL;
 }
 
 static void init_signals()
@@ -200,7 +202,7 @@ static void join_threads()
 
 int main()
 {
-    log_init(LOG_INFO);
+    log_init(LOG_DEBUG);
 
     threads = list_create();
 
