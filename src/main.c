@@ -55,10 +55,10 @@ list_t *threads;
 static void cancel_all_other_threads()
 {
     list_node_t *node;
+    thread_t self = thread_self();
 
     for (node = threads->head; node != NULL; node = node->next)
     {
-        thread_t self = thread_self();
         thread_t *thread = (thread_t *)node->payload;
 
         if (!thread_equal(&self, thread))
