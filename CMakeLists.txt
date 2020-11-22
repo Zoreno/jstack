@@ -38,6 +38,7 @@ target_sources(jstack PRIVATE src/endianess.c)
 target_sources(jstack PRIVATE src/list.c)
 target_sources(jstack PRIVATE src/logging.c)
 target_sources(jstack PRIVATE src/main.c)
+target_sources(jstack PRIVATE src/timer.c)
 target_sources(jstack PRIVATE src/utils.c)
 
 target_include_directories(jstack PRIVATE include)
