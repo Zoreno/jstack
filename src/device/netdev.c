@@ -36,10 +36,14 @@ void *netdev_rx_thread(void *arg)
 
     while (1)
     {
-        if (netdev_receive(tap_device, buffer, tap_device->mtu) < 0)
+        int packet_size = netdev_receive(tap_device, buffer, tap_device->mtu);
+
+        if (packet_size < 0)
         {
             log_warn("ERR: Read from tun_fd: %s", strerror(errno));
         }
+
+        log_debug("Read packet with size %i", packet_size);
 
         eth_header_t *header = parse_eth_header(buffer);
 
