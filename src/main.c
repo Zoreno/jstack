@@ -162,6 +162,11 @@ static void join_threads()
         {
             log_info("Joined with thread '%s'", thread->name);
         }
+
+        free(thread);
+        free(node);
+
+        node = NULL;
     }
 }
 
