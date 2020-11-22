@@ -33,15 +33,13 @@
 #include "arp/arp.h"
 #include "device/tap.h"
 #include "device/netdev.h"
+#include "ethernet/ethernet.h"
 #include "ip/ipv4.h"
-
-#include "logging.h"
-#include "utils.h"
-
 #include "platform/linux/mutex.h"
 #include "platform/linux/thread.h"
 
-#define BUFFER_SIZE 128
+#include "logging.h"
+#include "utils.h"
 
 // TODO: Investigate the need for this.
 #ifndef SIG_BLOCK
@@ -54,30 +52,10 @@ int running = 1;
 thread_t netdev_tx_tid;
 thread_t stack_handler_tid;
 
-void handle_frame(netdev_t *netdev, eth_header_t *header)
-{
-    switch (header->ethertype)
-    {
-    case ETH_P_ARP:
-        log_info("Got incoming ARP!");
-        arp_incoming(netdev, header);
-        break;
-    case ETH_P_IP:
-        ipv4_incoming(netdev, header);
-        break;
-    case ETH_P_IPV6:
-        log_trace("Got IPv6 Packet!");
-        break;
-    default:
-        log_warn("ETH: Unrecognized ethernet type: %#04x",
-                 header->ethertype);
-        break;
-    }
-}
-
 static void *stop_stack_handler(void *arg)
 {
     int err, signo;
+    (void)arg;
 
     for (;;)
     {
@@ -103,22 +81,38 @@ static void *stop_stack_handler(void *arg)
     return NULL;
 }
 
+static void *allocate_device_buffer(size_t size)
+{
+    void *mem = malloc(size);
+
+    if (!mem)
+    {
+        log_fatal("Failed to allocate memory for device buffer");
+        exit(1);
+    }
+
+    log_info("Allocated %lu bytes for device", size);
+
+    return mem;
+}
+
 static void *netdev_tx_thread(void *arg)
 {
     netdev_t *tap_device = (netdev_t *)arg;
 
-    char buffer[BUFFER_SIZE];
+    // TODO: This should be freed somehow.
+    char *buffer = allocate_device_buffer(tap_device->mtu);
 
     while (1)
     {
-        if (netdev_receive(tap_device, buffer, BUFFER_SIZE) < 0)
+        if (netdev_receive(tap_device, buffer, tap_device->mtu) < 0)
         {
             log_warn("ERR: Read from tun_fd: %s", strerror(errno));
         }
 
         eth_header_t *header = parse_eth_header(buffer);
 
-        handle_frame(tap_device, header);
+        ethernet_handle_frame(tap_device, header);
     }
 
     return NULL;
@@ -158,8 +152,8 @@ static void init_stack(netdev_t *tap_device)
 
 static void run_threads(netdev_t *tap_device)
 {
-    thread_create(&netdev_tx_tid, netdev_tx_thread, tap_device);
-    thread_create(&stack_handler_tid, stop_stack_handler, NULL);
+    thread_create("Netdev TX", &netdev_tx_tid, netdev_tx_thread, tap_device);
+    thread_create("Stack Handler", &stack_handler_tid, stop_stack_handler, NULL);
 }
 
 static void join_threads()

@@ -1,7 +1,12 @@
 #include <platform/linux/thread.h>
 
-int thread_create(thread_t *thread, start_func func, void *arg)
+#include <string.h>
+
+int thread_create(const char *name, thread_t *thread, start_func func, void *arg)
 {
+    memset(thread->name, 0, THREAD_NAME_MAX_SIZE + 1);
+    strncpy(thread->name, name, THREAD_NAME_MAX_SIZE);
+
     return pthread_create(&thread->thread, NULL, func, arg);
 }
 
@@ -37,4 +42,9 @@ thread_t thread_self()
     ret.thread = pthread_self();
 
     return ret;
+}
+
+const char const *thread_get_name(thread_t *thread)
+{
+    return thread->name;
 }
