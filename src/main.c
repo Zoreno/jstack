@@ -38,6 +38,7 @@
 #include "platform/linux/mutex.h"
 #include "platform/linux/thread.h"
 
+#include "list.h"
 #include "logging.h"
 #include "utils.h"
 
@@ -49,10 +50,26 @@
 sigset_t mask;
 int running = 1;
 
-thread_t netdev_rx_tid;
-thread_t stack_handler_tid;
+list_t *threads;
 
-static void *stop_stack_handler(void *arg)
+static void cancel_all_other_threads()
+{
+    list_node_t *node;
+
+    for (node = threads->head; node != NULL; node = node->next)
+    {
+        thread_t self = thread_self();
+        thread_t *thread = (thread_t *)node->payload;
+
+        if (!thread_equal(&self, thread))
+        {
+            thread_cancel(thread);
+        }
+    }
+}
+
+static void *
+stop_stack_handler(void *arg)
 {
     int err, signo;
     (void)arg;
@@ -70,7 +87,7 @@ static void *stop_stack_handler(void *arg)
         case SIGINT:
         case SIGQUIT:
             running = 0;
-            thread_cancel(&netdev_rx_tid);
+            cancel_all_other_threads();
             log_info("Caught interrupt signal. Stopping stack...");
             return 0;
         default:
@@ -115,39 +132,42 @@ static void init_stack(netdev_t *tap_device)
 
 static void run_threads(netdev_t *tap_device)
 {
-    thread_create("Netdev RX", &netdev_rx_tid, netdev_rx_thread, tap_device);
-    thread_create("Stack Handler", &stack_handler_tid, stop_stack_handler, NULL);
+    thread_t *netdev_rx_tid = malloc(sizeof(thread_t));
+    thread_t *stack_handler_tid = malloc(sizeof(thread_t));
+
+    thread_create("Netdev RX", netdev_rx_tid, netdev_rx_thread, tap_device);
+    list_insert(threads, netdev_rx_tid);
+
+    thread_create("Stack Handler", stack_handler_tid, stop_stack_handler, NULL);
+    list_insert(threads, stack_handler_tid);
 }
 
 static void join_threads()
 {
-    int err = thread_join(&netdev_rx_tid, NULL);
+    list_node_t *node;
 
-    if (err)
+    while ((node = list_pop(threads)) != NULL)
     {
-        log_error("Failed to join netdev thread");
-        exit(1);
-    }
-    else
-    {
-        log_info("Joined with netdev thread");
-    }
+        thread_t *thread = (thread_t *)node->payload;
 
-    err = thread_join(&stack_handler_tid, NULL);
+        int err = thread_join(thread, NULL);
 
-    if (err)
-    {
-        log_error("Failed to join stack handler thread");
-        exit(1);
-    }
-    else
-    {
-        log_info("Joined with stack handler thread");
+        if (err)
+        {
+            log_error("Failed to join thread '%s'", thread->name);
+            exit(1);
+        }
+        else
+        {
+            log_info("Joined with thread '%s'", thread->name);
+        }
     }
 }
 
 int main()
 {
+    threads = list_create();
+
     netdev_t tap_device;
 
     init_signals();
