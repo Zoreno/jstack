@@ -57,7 +57,7 @@ static void *stop_stack_handler(void *arg)
     int err, signo;
     (void)arg;
 
-    for (;;)
+    while (1)
     {
         err = sigwait(&mask, &signo);
         if (err != 0)
